@@ -1,0 +1,56 @@
+/* Navbar container */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background-color: orange;
+  padding: 20px 40px;
+}
+
+/* Logo */
+.logo {
+  font-size: 24px;
+  font-weight: bold;
+  color: black;
+}
+
+/* Menu list */
+.nav-links {
+  list-style: none;
+  display: flex;
+  gap: 30px;
+}
+
+/* Menu items */
+.nav-links li {
+  cursor: pointer;
+  font-weight: 500;
+  color: black;
+  transition: color 0.3s ease;
+}
+
+/* Hover effect */
+.nav-links li:hover {
+  color: white;
+}
+
+/* Login button */
+.login-btn {
+  padding: 8px 16px;
+  background-color: black;
+  color: orange !important;
+  border-radius: 5px;
+}
+
+.login-btn:hover {
+  background-color: #222;
+}
+.nav-links a {
+  text-decoration: none;
+  color: black;
+}
+
+.login-btn a {
+  color: orange;
+}
