@@ -1,0 +1,91 @@
+.ag-loginRoot{
+  min-height: 100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 28px;
+  position: relative;
+  overflow:hidden;
+}
+
+.ag-loginGlow{
+  position:absolute;
+  inset:-40px;
+  background:
+    radial-gradient(700px 440px at 25% 25%, rgba(0,229,255,0.22), transparent 55%),
+    radial-gradient(720px 480px at 80% 30%, rgba(168,85,247,0.20), transparent 55%),
+    radial-gradient(680px 520px at 60% 90%, rgba(255,122,24,0.12), transparent 55%);
+  filter: blur(2px);
+  animation: agFloat 10s ease-in-out infinite;
+}
+
+@keyframes agFloat{
+  0%,100%{ transform: translate3d(0,0,0) scale(1); }
+  50%{ transform: translate3d(0,-8px,0) scale(1.02); }
+}
+
+.ag-loginCard{
+  width: min(420px, 100%);
+  padding: 18px;
+  border-radius: 22px;
+  border: 1px solid rgba(0,229,255,0.20);
+  background: linear-gradient(180deg, rgba(11,16,32,0.92), rgba(5,6,10,0.72));
+  box-shadow: 0 0 30px rgba(0,229,255,0.18), 0 0 70px rgba(168,85,247,0.14);
+  position: relative;
+}
+
+.ag-loginHeader{ margin-bottom: 10px; }
+
+.ag-loginTitle{
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  background: linear-gradient(90deg, var(--neonCyan), var(--neonPurple), var(--neonOrange));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.ag-loginSubtitle{
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.ag-label{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.ag-motto{
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px dashed rgba(0,229,255,0.18);
+  color: rgba(232,236,255,0.88);
+  background: rgba(0,229,255,0.06);
+  text-align:center;
+  letter-spacing: 0.02em;
+}
+
+.ag-loginBtn{ width: 100%; margin-top: 14px; }
+.ag-loginBtn.disabled{ opacity: 0.7; }
+
+.ag-error{
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,122,24,0.30);
+  background: rgba(255,122,24,0.10);
+  color: rgba(232,236,255,0.92);
+}
+
+.ag-loginFoot{
+  margin-top: 12px;
+  font-size: 12px;
+  text-align:center;
+}

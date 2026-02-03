@@ -1,0 +1,85 @@
+:root{
+  --bg0:#05060a;
+  --bg1:#070a12;
+  --panel:#0b1020;
+  --panel2:#0a0f1e;
+  --text:#e8ecff;
+  --muted:#93a1c2;
+
+  --neonCyan:#00e5ff;
+  --neonPurple:#a855f7;
+  --neonOrange:#ff7a18;
+  --neonGreen:#2bff88;
+
+  --border: rgba(0,229,255,0.18);
+  --shadow: 0 0 24px rgba(0,229,255,0.18), 0 0 48px rgba(168,85,247,0.10);
+  --radius: 18px;
+}
+
+*{ box-sizing:border-box; }
+
+html, body{ height:100%; }
+
+body{
+  margin:0;
+  color:var(--text);
+  font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  background:
+    radial-gradient(1200px 700px at 20% 10%, rgba(0,229,255,0.18), transparent 55%),
+    radial-gradient(900px 600px at 85% 20%, rgba(168,85,247,0.16), transparent 50%),
+    radial-gradient(700px 500px at 70% 90%, rgba(255,122,24,0.10), transparent 55%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+}
+
+a{ color:inherit; }
+
+.ag-card{
+  background: linear-gradient(180deg, rgba(11,16,32,0.92), rgba(10,15,30,0.78));
+  border:1px solid var(--border);
+  box-shadow: var(--shadow);
+  border-radius: var(--radius);
+  padding:16px;
+}
+
+.ag-btn{
+  border:1px solid rgba(0,229,255,0.22);
+  background: rgba(0,229,255,0.10);
+  color: var(--text);
+  padding: 12px 14px;
+  border-radius: 14px;
+  cursor:pointer;
+  transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease;
+}
+
+.ag-btn:hover{
+  transform: translateY(-1px);
+  border-color: rgba(0,229,255,0.38);
+  box-shadow: 0 0 0 2px rgba(0,229,255,0.08), var(--shadow);
+}
+
+.ag-btnPrimary{
+  border-color: rgba(43,255,136,0.32);
+  background: rgba(43,255,136,0.14);
+}
+
+.ag-btnDanger{
+  border-color: rgba(255,122,24,0.38);
+  background: rgba(255,122,24,0.14);
+}
+
+.ag-input{
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border:1px solid rgba(0,229,255,0.16);
+  background: rgba(10,15,30,0.65);
+  color: var(--text);
+  outline:none;
+}
+
+.ag-input:focus{
+  border-color: rgba(0,229,255,0.42);
+  box-shadow: 0 0 0 2px rgba(0,229,255,0.10);
+}
+
+.ag-muted{ color: var(--muted); }

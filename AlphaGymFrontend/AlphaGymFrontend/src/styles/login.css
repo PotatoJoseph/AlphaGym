@@ -1,0 +1,115 @@
+.ag-loginRoot{
+  min-height: 100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 28px;
+  position: relative;
+  overflow:hidden;
+}
+
+/* Professional Alpha background (subtle orange/amber only) */
+.ag-loginGlow{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(1100px 650px at 75% 15%, rgba(255,122,24,0.14), transparent 60%),
+    radial-gradient(900px 600px at 20% 85%, rgba(255,180,60,0.10), transparent 62%),
+    linear-gradient(180deg, var(--bg0), var(--bg1));
+  filter: none;
+  animation: none;
+}
+
+.ag-loginCard{
+  width: min(420px, 100%);
+  padding: 20px;
+  border-radius: 18px;
+
+  background: rgba(18,22,28,0.92);
+  border: 1px solid rgba(255,255,255,0.10);
+
+  box-shadow: 0 16px 40px rgba(0,0,0,0.55);
+  backdrop-filter: blur(8px);
+  position: relative;
+}
+
+.ag-loginHeader{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin-bottom: 14px;
+}
+
+.ag-loginLogoWrap{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width: 100%;
+  max-width: 180px;
+
+  padding: 10px 12px;
+  border-radius: 14px;
+
+  background: rgba(0,0,0,0.22);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.ag-loginLogo{
+  width: 100%;
+  max-width: 160px;
+  height: auto;
+  object-fit: contain;
+
+  /* subtle shadow only (professional) */
+  filter: drop-shadow(0 8px 18px rgba(0,0,0,0.55));
+}
+
+.ag-label{
+  display:flex;
+  flex-direction:column;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Motto matches brand, not neon */
+.ag-motto{
+  margin-top: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+
+  background: rgba(255,122,24,0.08);
+  border: 1px solid rgba(255,122,24,0.22);
+
+  color: rgba(255,255,255,0.88);
+  text-align:center;
+  letter-spacing: 0.01em;
+}
+
+/* Error stays within brand colors */
+.ag-error{
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid rgba(255,59,31,0.30);
+  background: rgba(255,59,31,0.12);
+  color: rgba(255,255,255,0.92);
+}
+
+.ag-loginBtn{
+  width: 100%;
+  margin-top: 14px;
+}
+
+.ag-loginBtn.disabled{
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.ag-loginFoot{
+  margin-top: 12px;
+  font-size: 12px;
+  text-align:center;
+  color: var(--muted);
+}

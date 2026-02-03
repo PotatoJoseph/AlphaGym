@@ -1,0 +1,31 @@
+.ag-barChart{
+  height: 180px;
+  display:flex;
+  align-items:flex-end;
+  gap: 12px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+}
+
+.ag-barCol{
+  flex: 1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap: 8px;
+}
+
+.ag-bar{
+  width: 100%;
+  border-radius: 12px;
+  background: linear-gradient(180deg, rgba(255,180,60,0.95), rgba(255,122,24,0.85));
+  border: 1px solid rgba(255,122,24,0.25);
+  min-height: 6px;
+}
+
+.ag-barLabel{
+  font-size: 12px;
+  color: rgba(255,255,255,0.7);
+}

@@ -1,0 +1,69 @@
+.ag-grid{
+  display:grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 14px;
+}
+
+.ag-col-4{ grid-column: span 4; }
+.ag-col-6{ grid-column: span 6; }
+.ag-col-8{ grid-column: span 8; }
+.ag-col-12{ grid-column: span 12; }
+
+.ag-stat{ position:relative; overflow:hidden; }
+.ag-stat::after{
+  content:"";
+  position:absolute;
+  inset:-80px;
+  opacity:0.28;
+  filter: blur(16px);
+  pointer-events:none;
+}
+
+.ag-accent-cyan::after{ background: radial-gradient(400px 200px at 20% 20%, rgba(0,229,255,0.9), transparent 60%); }
+.ag-accent-purple::after{ background: radial-gradient(400px 200px at 20% 20%, rgba(168,85,247,0.9), transparent 60%); }
+.ag-accent-orange::after{ background: radial-gradient(400px 200px at 20% 20%, rgba(255,122,24,0.9), transparent 60%); }
+.ag-accent-green::after{ background: radial-gradient(400px 200px at 20% 20%, rgba(43,255,136,0.9), transparent 60%); }
+
+.ag-statTitle{ color: var(--muted); font-size: 12px; letter-spacing: 0.08em; text-transform: uppercase; }
+.ag-statValue{ margin-top: 8px; font-size: 28px; font-weight: 900; letter-spacing: 0.02em; }
+.ag-statHint{ margin-top: 6px; color: rgba(147,161,194,0.9); font-size: 12px; }
+
+.ag-sectionTitle{
+  font-size: 14px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin: 0 0 10px 0;
+  color: rgba(232,236,255,0.92);
+}
+
+.ag-table{
+  width:100%;
+  border-collapse: collapse;
+  overflow:hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(0,229,255,0.14);
+}
+
+.ag-table th, .ag-table td{
+  text-align:left;
+  padding: 12px 12px;
+  border-bottom: 1px solid rgba(0,229,255,0.10);
+  font-size: 13px;
+}
+
+.ag-table th{ color: var(--muted); font-weight: 700; font-size: 12px; letter-spacing: 0.06em; }
+
+.ag-pill{
+  display:inline-flex;
+  align-items:center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(0,229,255,0.18);
+  background: rgba(0,229,255,0.08);
+  color: rgba(232,236,255,0.92);
+  font-size: 12px;
+}
+
+@media (max-width: 980px){
+  .ag-col-4, .ag-col-6, .ag-col-8{ grid-column: span 12; }
+}

@@ -1,0 +1,151 @@
+/* ===== Shell layout ===== */
+.ag-shell{
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  background: radial-gradient(
+      1200px 800px at 20% 10%,
+      rgba(255, 120, 40, 0.08),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #0b0c10, #050607);
+  color: var(--text);
+}
+
+/* ===== Sidebar ===== */
+.ag-sidebar{
+  display: flex;
+  flex-direction: column;
+  padding: 10px;
+  background: linear-gradient(
+    180deg,
+    rgba(15, 17, 22, 0.96),
+    rgba(8, 9, 12, 0.92)
+  );
+  border-right: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ===== Brand block (top-left) ===== */
+.ag-brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+
+  padding: 14px 12px;
+  margin: 10px 10px 18px 10px;
+
+  border-radius: 16px;
+  background: rgba(12, 14, 18, 0.9);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.ag-brandLogo{
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  display: block;
+  border-radius: 8px;
+}
+
+.ag-brandText{
+  display:flex;
+  flex-direction:column;
+  line-height: 1.1;
+}
+
+.ag-brandName{
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.ag-brandSub{
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+/* ===== Navigation ===== */
+.ag-nav{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px;
+}
+
+.ag-link{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 10px 14px;
+  border-radius: 14px;
+
+  text-decoration: none;
+  color: var(--text);
+  font-size: 14px;
+
+  background: rgba(255,255,255,0.02);
+  border: 1px solid transparent;
+
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.ag-link:hover{
+  background: rgba(255,255,255,0.05);
+  border-color: rgba(255,255,255,0.08);
+}
+
+.ag-link.active{
+  background: linear-gradient(
+    90deg,
+    rgba(255, 122, 24, 0.18),
+    rgba(255, 180, 60, 0.12)
+  );
+  border-color: rgba(255,122,24,0.35);
+}
+
+/* ===== Sidebar logout ===== */
+.ag-sidebarLogout{
+  margin-top: 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+/* ===== Main area ===== */
+.ag-main{
+  display: flex;
+  flex-direction: column;
+}
+
+/* ===== Topbar ===== */
+.ag-topbar{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 22px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+
+  background: linear-gradient(
+    180deg,
+    rgba(12, 14, 18, 0.85),
+    rgba(8, 9, 12, 0.75)
+  );
+}
+
+.ag-topbarTitle{
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.ag-topbarStatus{
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ===== Page content ===== */
+.ag-content{
+  padding: 24px;
+}

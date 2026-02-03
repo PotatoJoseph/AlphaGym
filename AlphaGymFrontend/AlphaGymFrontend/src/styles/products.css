@@ -1,0 +1,359 @@
+.ag-productsPage{
+  display:flex;
+  flex-direction:column;
+  gap: 16px;
+}
+
+.ag-productsTop{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap: 14px;
+}
+
+.ag-productsGridLayout{
+  display:grid;
+  grid-template-columns: 1.35fr 0.85fr;
+  gap: 16px;
+}
+
+.ag-rightCol{
+  display:flex;
+  flex-direction:column;
+  gap: 16px;
+}
+
+.ag-cardTitle{
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin-bottom: 12px;
+  color: rgba(255,255,255,0.9);
+}
+
+/* Products horizontal grid */
+.ag-productsGrid{
+  display:grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ag-productCard{
+  text-align:left;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(12, 14, 18, 0.65);
+  padding: 12px;
+  cursor:pointer;
+  transition: transform .12s ease, border-color .12s ease, background .12s ease;
+}
+
+.ag-productCard:hover{
+  transform: translateY(-1px);
+  border-color: rgba(255,122,24,0.35);
+  background: rgba(12, 14, 18, 0.78);
+}
+
+/* HARD SAFETY so images can NEVER explode */
+.ag-productImg{
+  height: 90px;
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.ag-productImg img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Also protect any images inside the product cards */
+.ag-productCard img{
+  max-width: 100%;
+  max-height: 100%;
+  display: block;
+}
+
+.ag-productPlaceholder{
+  font-weight: 900;
+  letter-spacing: 0.1em;
+  color: rgba(255,180,60,0.9);
+}
+
+.ag-productMeta{
+  margin-top: 10px;
+  display:flex;
+  justify-content:space-between;
+  gap: 10px;
+}
+
+.ag-productName{
+  font-weight: 800;
+  font-size: 13px;
+  color: rgba(255,255,255,0.92);
+}
+
+.ag-productPrice{
+  font-weight: 900;
+  color: rgba(255,180,60,0.95);
+}
+.ag-newPhotoPreview{
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  overflow:hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.ag-newPhotoPreview img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display:block;
+}
+
+
+.ag-productAdd{
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(255,122,24,0.95);
+}
+
+/* Customer */
+.ag-customerRow{
+  display:flex;
+  gap: 12px;
+  align-items:flex-start;
+}
+
+.ag-customerAvatar{
+  width: 84px;
+  height: 84px;
+  border-radius: 16px;
+  overflow:hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+}
+
+.ag-customerAvatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.ag-customerPlaceholder{
+  font-size: 11px;
+  color: rgba(255,255,255,0.5);
+}
+
+.ag-customerInfo{
+  flex:1;
+}
+
+.ag-customerActions{
+  display:flex;
+  gap: 8px;
+  margin-top: 10px;
+  flex-wrap: wrap;
+}
+
+/* Cart */
+.ag-cartList{
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.ag-cartItem{
+  display:grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 10px;
+  align-items:center;
+  padding: 10px 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(0,0,0,0.18);
+}
+
+.ag-cartName{
+  font-weight: 800;
+}
+
+.ag-cartQty{
+  display:flex;
+  align-items:center;
+  gap: 8px;
+}
+
+.ag-qtyBtn{
+  width: 28px;
+  height: 28px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(255,255,255,0.04);
+  color: rgba(255,255,255,0.9);
+  cursor:pointer;
+}
+
+.ag-qtyVal{
+  width: 22px;
+  text-align:center;
+  font-weight: 900;
+}
+
+.ag-cartAmt{
+  font-weight: 900;
+  color: rgba(255,180,60,0.95);
+}
+
+.ag-removeBtn{
+  border:none;
+  background: transparent;
+  color: rgba(255,255,255,0.6);
+  cursor:pointer;
+  font-size: 16px;
+}
+
+.ag-cartFooter{
+  margin-top: 12px;
+  display:flex;
+  flex-direction:column;
+  gap: 10px;
+}
+
+.ag-totalRow{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.ag-totalValue{
+  font-weight: 900;
+  color: rgba(255,180,60,0.95);
+}
+
+/* Table */
+.ag-tableWrap{
+  overflow:auto;
+}
+
+.ag-table{
+  width:100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ag-table th{
+  text-align:left;
+  padding: 10px 8px;
+  color: rgba(255,255,255,0.7);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.ag-table td{
+  padding: 10px 8px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+
+.ag-histCustomer{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+}
+
+.ag-histAvatar{
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  overflow:hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+  background: rgba(0,0,0,0.25);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.ag-histAvatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.ag-histPlaceholder{
+  color: rgba(255,255,255,0.5);
+}
+
+/* Modal */
+.ag-modalBackdrop{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 18px;
+  z-index: 50;
+}
+
+.ag-modal{
+  width: min(520px, 100%);
+  border-radius: 18px;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(12, 14, 18, 0.96);
+  padding: 16px;
+}
+
+.ag-modalTitle{
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  margin-bottom: 10px;
+}
+
+.ag-modalActions{
+  display:flex;
+  justify-content:flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.ag-newPhotoRow{
+  display:flex;
+  align-items:center;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.ag-newPhotoPreview{
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
+  overflow:hidden;
+  border: 1px solid rgba(255,255,255,0.10);
+}
+
+.ag-newPhotoPreview img{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+}
+
+/* Responsive */
+@media (max-width: 1100px){
+  .ag-productsGridLayout{ grid-template-columns: 1fr; }
+  .ag-productsGrid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
