@@ -1,0 +1,6 @@
+@AlphaGymBackend_HostAddress = http://localhost:5009
+
+GET {{AlphaGymBackend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
