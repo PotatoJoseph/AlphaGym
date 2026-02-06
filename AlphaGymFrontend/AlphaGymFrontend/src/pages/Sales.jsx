@@ -8,14 +8,43 @@ function fmt(n) {
   return `₪${Number(n || 0).toFixed(0)}`;
 }
 
+function startOfDay(d) {
+  const x = new Date(d);
+  x.setHours(0, 0, 0, 0);
+  return x;
+}
+
+function endOfDay(d) {
+  const x = new Date(d);
+  x.setHours(23, 59, 59, 999);
+  return x;
+}
+
+// Monday-start week
+function startOfWeek(d) {
+  const x = startOfDay(d);
+  const day = x.getDay(); // 0 Sun - 6 Sat
+  const diff = (day + 6) % 7; // Monday start
+  x.setDate(x.getDate() - diff);
+  return x;
+}
+
+function inRange(iso, min, max) {
+  const t = new Date(iso);
+  return t >= min && t <= max;
+}
+
 export default function Sales() {
-  const [range, setRange] = useState("weekly");
+  const [range, setRange] = useState("weekly"); // daily | weekly | monthly | yearly
   const [tx, setTx] = useState([]);
 
-  const recalc = () => {
-    const list = loadTransactions();
-    setTx(list);
-  };
+  // Monthly sub-range: week 1..4
+  const [monthWeek, setMonthWeek] = useState(1);
+
+  // Yearly sub-range: month 0..11
+  const [yearMonth, setYearMonth] = useState(new Date().getMonth());
+
+  const recalc = () => setTx(loadTransactions());
 
   useEffect(() => {
     recalc();
@@ -23,44 +52,63 @@ export default function Sales() {
     return () => window.removeEventListener("alphagym_sales_updated", recalc);
   }, []);
 
-  // ✅ weekly chart series (Mon..Sun)
-  const series = useMemo(() => getWeeklySeries(tx), [tx]);
+  // Global totals (today/week/month) for the small line under chart
+  const bigTotals = useMemo(() => getTotals(tx), [tx]);
 
-  // ✅ filter rows by range
+  const now = useMemo(() => new Date(), [tx.length]); // cheap refresh anchor
+
+  // ============================
+  // Filters for each range
+  // ============================
   const rows = useMemo(() => {
     const now = new Date();
 
-    const isSameDay = (a, b) =>
-      a.getFullYear() === b.getFullYear() &&
-      a.getMonth() === b.getMonth() &&
-      a.getDate() === b.getDate();
-
-    const startOfWeek = (d) => {
-      const x = new Date(d);
-      const day = x.getDay(); // 0 Sun - 6 Sat
-      const diff = (day + 6) % 7; // Monday start
-      x.setDate(x.getDate() - diff);
-      x.setHours(0, 0, 0, 0);
-      return x;
-    };
-
-    const startWeek = startOfWeek(now);
-
+    // DAILY = today only
     if (range === "daily") {
-      return tx.filter((t) => isSameDay(new Date(t.timeISO), now));
+      const min = startOfDay(now);
+      const max = endOfDay(now);
+      return tx.filter((t) => inRange(t.timeISO, min, max));
     }
 
+    // WEEKLY = from Monday -> now
     if (range === "weekly") {
-      return tx.filter((t) => new Date(t.timeISO) >= startWeek);
+      const min = startOfWeek(now);
+      const max = endOfDay(now);
+      return tx.filter((t) => inRange(t.timeISO, min, max));
     }
 
-    // monthly
-    return tx.filter((t) => {
-      const d = new Date(t.timeISO);
-      return d.getFullYear() === now.getFullYear() && d.getMonth() === now.getMonth();
-    });
-  }, [range, tx]);
+    // MONTHLY = selected week 1..4 within this month
+    if (range === "monthly") {
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
+      // Week mapping:
+      // W1: 1-7, W2: 8-14, W3: 15-21, W4: 22-end
+      const ranges = [
+        [1, 7],
+        [8, 14],
+        [15, 21],
+        [22, monthEnd.getDate()],
+      ];
+
+      const [a, b] = ranges[Math.max(0, Math.min(3, monthWeek - 1))];
+      const min = new Date(now.getFullYear(), now.getMonth(), a);
+      const max = new Date(now.getFullYear(), now.getMonth(), b, 23, 59, 59, 999);
+
+      // Ensure we clamp inside month
+      const realMin = min < monthStart ? monthStart : min;
+      const realMax = max > monthEnd ? endOfDay(monthEnd) : max;
+
+      return tx.filter((t) => inRange(t.timeISO, realMin, realMax));
+    }
+
+    // YEARLY = selected month inside this year
+    const min = new Date(now.getFullYear(), yearMonth, 1);
+    const max = new Date(now.getFullYear(), yearMonth + 1, 0, 23, 59, 59, 999);
+    return tx.filter((t) => inRange(t.timeISO, min, max));
+  }, [range, tx, monthWeek, yearMonth]);
+
+  // Range totals
   const totals = useMemo(() => {
     const total = rows.reduce((sum, t) => sum + Number(t.total || 0), 0);
     const count = rows.length;
@@ -68,14 +116,60 @@ export default function Sales() {
     return { total, count, avg };
   }, [rows]);
 
-  // ✅ chart normalization
-  const maxVal = useMemo(() => Math.max(...series.map((x) => x.value), 1), [series]);
+  // ============================
+  // Chart data depending on range
+  // ============================
+  const chart = useMemo(() => {
+    if (range === "weekly") {
+      const s = getWeeklySeries(tx);
+      return { title: "Weekly Sales (Mon–Sun)", bars: s };
+    }
 
-  // optional: global totals (today/week/month)
-  const bigTotals = useMemo(() => getTotals(tx), [tx]);
+    if (range === "monthly") {
+      // Week 1..4 totals for current month
+      const now = new Date();
+      const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
 
-  // ✅ fixed chart height in pixels
+      const weekDefs = [
+        { label: "Week 1", a: 1, b: 7 },
+        { label: "Week 2", a: 8, b: 14 },
+        { label: "Week 3", a: 15, b: 21 },
+        { label: "Week 4", a: 22, b: monthEnd.getDate() },
+      ];
+
+      const bars = weekDefs.map((w) => {
+        const min = new Date(now.getFullYear(), now.getMonth(), w.a);
+        const max = new Date(now.getFullYear(), now.getMonth(), w.b, 23, 59, 59, 999);
+        const value = tx
+          .filter((t) => inRange(t.timeISO, min, max))
+          .reduce((sum, t) => sum + Number(t.total || 0), 0);
+        return { label: w.label, value };
+      });
+
+      return { title: "Monthly Sales (Weeks)", bars };
+    }
+
+    // YEARLY chart: Jan..Dec totals for this year
+    const now = new Date();
+    const year = now.getFullYear();
+    const monthLabels = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+
+    const bars = monthLabels.map((label, m) => {
+      const min = new Date(year, m, 1);
+      const max = new Date(year, m + 1, 0, 23, 59, 59, 999);
+      const value = tx
+        .filter((t) => inRange(t.timeISO, min, max))
+        .reduce((sum, t) => sum + Number(t.total || 0), 0);
+      return { label, value };
+    });
+
+    return { title: "Yearly Sales (Months)", bars };
+  }, [range, tx]);
+
+  const maxVal = useMemo(() => Math.max(...chart.bars.map((x) => x.value), 1), [chart]);
   const CHART_H = 140;
+
+  const monthNames = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
   return (
     <div>
@@ -91,35 +185,84 @@ export default function Sales() {
             <div>
               <div style={{ fontWeight: 800, letterSpacing: "0.06em" }}>Sales Analytics</div>
               <div className="ag-muted" style={{ fontSize: 12, marginTop: 4 }}>
-                Real totals + weekly chart (saved from checkout).
+                Daily / weekly / monthly (weeks) / yearly (months).
               </div>
             </div>
 
-            <div style={{ display: "flex", gap: 10 }}>
-              <button
-                className={`ag-btn ${range === "daily" ? "ag-btnPrimary" : ""}`}
-                type="button"
-                onClick={() => setRange("daily")}
-              >
+            <div style={{ display: "flex", gap: 10, flexWrap: "wrap", justifyContent: "flex-end" }}>
+              <button className={`ag-btn ${range === "daily" ? "ag-btnPrimary" : ""}`} type="button" onClick={() => setRange("daily")}>
                 Daily
               </button>
-              <button
-                className={`ag-btn ${range === "weekly" ? "ag-btnPrimary" : ""}`}
-                type="button"
-                onClick={() => setRange("weekly")}
-              >
+              <button className={`ag-btn ${range === "weekly" ? "ag-btnPrimary" : ""}`} type="button" onClick={() => setRange("weekly")}>
                 Weekly
               </button>
               <button
                 className={`ag-btn ${range === "monthly" ? "ag-btnPrimary" : ""}`}
                 type="button"
-                onClick={() => setRange("monthly")}
+                onClick={() => {
+                  setRange("monthly");
+                  setMonthWeek(1);
+                }}
               >
                 Monthly
+              </button>
+              <button
+                className={`ag-btn ${range === "yearly" ? "ag-btnPrimary" : ""}`}
+                type="button"
+                onClick={() => {
+                  setRange("yearly");
+                  setYearMonth(new Date().getMonth());
+                }}
+              >
+                Yearly
               </button>
             </div>
           </div>
         </div>
+
+        {/* ✅ Monthly sub buttons: Week 1..4 */}
+        {range === "monthly" && (
+          <div className="ag-col-12">
+            <div className="ag-card" style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+              <div style={{ fontWeight: 800 }}>Select Week</div>
+              {[1,2,3,4].map((w) => (
+                <button
+                  key={w}
+                  className={`ag-btn ${monthWeek === w ? "ag-btnPrimary" : ""}`}
+                  type="button"
+                  onClick={() => setMonthWeek(w)}
+                >
+                  Week {w}
+                </button>
+              ))}
+              <div className="ag-muted" style={{ fontSize: 12 }}>
+                ({monthNames[new Date().getMonth()]})
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ✅ Yearly sub buttons: 12 months */}
+        {range === "yearly" && (
+          <div className="ag-col-12">
+            <div className="ag-card" style={{ display: "flex", gap: 10, flexWrap: "wrap", alignItems: "center" }}>
+              <div style={{ fontWeight: 800 }}>Select Month</div>
+              {monthNames.map((m, idx) => (
+                <button
+                  key={m}
+                  className={`ag-btn ${yearMonth === idx ? "ag-btnPrimary" : ""}`}
+                  type="button"
+                  onClick={() => setYearMonth(idx)}
+                >
+                  {m.slice(0, 3)}
+                </button>
+              ))}
+              <div className="ag-muted" style={{ fontSize: 12 }}>
+                ({new Date().getFullYear()})
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Quick stats for selected range */}
         <div className="ag-col-4">
@@ -132,35 +275,28 @@ export default function Sales() {
           <StatCard title="Average" value={fmt(totals.avg)} hint="Avg per transaction" accent="alpha" />
         </div>
 
-        {/* Weekly chart */}
+        {/* Chart */}
         <div className="ag-col-12">
           <div className="ag-card">
             <div className="ag-sectionTitle" style={{ marginTop: 0 }}>
-              Weekly Sales
+              {chart.title}
             </div>
 
             <div className="ag-muted" style={{ fontSize: 12, marginBottom: 10 }}>
-              This week total: {fmt(bigTotals.week)} • Today: {fmt(bigTotals.today)} • Month: {fmt(bigTotals.month)}
+              This week: {fmt(bigTotals.week)} • Today: {fmt(bigTotals.today)} • Month: {fmt(bigTotals.month)}
             </div>
 
-            {series.length === 0 ? (
-              <div className="ag-muted" style={{ fontSize: 12 }}>
-                No sales yet this week.
-              </div>
-            ) : (
-              <div className="ag-barChart">
-                {series.map((d) => {
-                  // ✅ pixel height so it ALWAYS renders correctly
-                  const h = Math.max(4, Math.round((d.value / maxVal) * CHART_H));
-                  return (
-                    <div key={d.label} className="ag-barCol" title={`${d.label}: ₪${d.value}`}>
-                      <div className="ag-bar" style={{ height: `${h}px` }} />
-                      <div className="ag-barLabel">{d.label}</div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
+            <div className="ag-barChart">
+              {chart.bars.map((d) => {
+                const h = Math.max(4, Math.round((d.value / maxVal) * CHART_H));
+                return (
+                  <div key={d.label} className="ag-barCol" title={`${d.label}: ₪${d.value}`}>
+                    <div className="ag-bar" style={{ height: `${h}px` }} />
+                    <div className="ag-barLabel">{d.label}</div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         </div>
 
