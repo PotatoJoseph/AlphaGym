@@ -51,15 +51,16 @@ export default function Login() {
         </div>
 
         <label className="ag-label">
-          Username
+          Email
           <input
             className="ag-input"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
-            placeholder="owner"
-            autoComplete="username"
+            placeholder="admin@alphagym.com"
+            autoComplete="email"
           />
         </label>
+
 
         <label className="ag-label">
           Password

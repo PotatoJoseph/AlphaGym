@@ -25,11 +25,28 @@ namespace AlphaGymBackend.Services.Auth
         }
         public async Task<string> LoginAsync(string email, string password)
         {
+            Console.WriteLine($"[AUTH] Login attempt for: {email}");
             var admin = await _context.Admins.FirstOrDefaultAsync(a => a.Email == email);
-            if (admin == null || admin.PasswordHash != password) return null;
+            
+            if (admin == null) 
+            {
+                Console.WriteLine($"[AUTH] User not found: {email}");
+                return null;
+            }
 
+            Console.WriteLine($"[AUTH] User found, verifying password...");
+            var ok = BCrypt.Net.BCrypt.Verify(password, admin.PasswordHash);
+            
+            if (!ok) 
+            {
+                Console.WriteLine($"[AUTH] Password verification failed for: {email}");
+                return null;
+            }
+
+            Console.WriteLine($"[AUTH] Login successful for: {email}");
             return GenerateJwtToken(admin);
         }
+
 
         private string GenerateJwtToken(Admin admin)
         {

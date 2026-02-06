@@ -11,6 +11,17 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options =>
+{
+    options.AddDefaultPolicy(policy =>
+    {
+        policy.WithOrigins("http://localhost:5173") // Frontend URL
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
+});
+
+
 // Services
 builder.Services.AddScoped<AlphaGymBackend.Services.Email.IEmailService, AlphaGymBackend.Services.Email.EmailService>();
 builder.Services.AddScoped<AlphaGymBackend.Services.Auth.AuthService>();
@@ -47,7 +58,10 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseCors();
+
 app.UseAuthentication();
+
 app.UseAuthorization();
 
 app.MapControllers();

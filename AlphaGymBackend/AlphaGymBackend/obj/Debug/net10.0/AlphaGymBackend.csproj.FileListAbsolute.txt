@@ -132,3 +132,4 @@ C:\Coding\AlphaGym\AlphaGym\AlphaGymBackend\AlphaGymBackend\obj\Debug\net10.0\re
 C:\Coding\AlphaGym\AlphaGym\AlphaGymBackend\AlphaGymBackend\obj\Debug\net10.0\AlphaGymBackend.pdb
 C:\Coding\AlphaGym\AlphaGym\AlphaGymBackend\AlphaGymBackend\obj\Debug\net10.0\AlphaGymBackend.genruntimeconfig.cache
 C:\Coding\AlphaGym\AlphaGym\AlphaGymBackend\AlphaGymBackend\obj\Debug\net10.0\ref\AlphaGymBackend.dll
+C:\Coding\AlphaGym\AlphaGym\AlphaGymBackend\AlphaGymBackend\bin\Debug\net10.0\BCrypt.Net-Next.dll
