@@ -33,7 +33,8 @@ export default function Dashboard() {
     setDoorBusy(true);
     setDoorMsg("");
     try {
-      await apiFetch(`/doors/${action}`, { method: "POST" });
+      await apiFetch(`/Doors/${action}`, { method: "POST" });
+
       if (action === "open") setDoorMsg("Door opened");
       else if (action === "lock") setDoorMsg("Door locked");
       else if (action === "member") setDoorMsg("Member added");

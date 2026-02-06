@@ -1,9 +1,14 @@
-const BASE = import.meta.env.VITE_API_BASE_URL || "";
+import { getToken } from "../utils/auth";
+
+const BASE = import.meta.env.API || "";
 
 export async function apiFetch(path, options = {}) {
+  const token = getToken();
+
   const res = await fetch(`${BASE}${path}`, {
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options.headers || {}),
     },
     ...options,
@@ -27,8 +32,11 @@ async function request(path, { method = "GET", body } = {}) {
 }
 
 export const api = {
-  openDoor: () => request("/doors/open", { method: "POST" }),
-  lockDoor: () => request("/doors/lock", { method: "POST" }),
+  login: (email, password) => request("/Auth/login", { method: "POST", body: { email, password } }),
+  openDoor: () => request("/Doors/open", { method: "POST" }),
+  lockDoor: () => request("/Doors/lock", { method: "POST" }),
+
 };
 
 export default api;
+

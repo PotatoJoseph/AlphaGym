@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Coding\\AlphaGym\\AlphaGym\\AlphaGymBackend\\alphagymbackend\\AlphaGymBackend.csproj": {}
+    "C:\\Coding\\AlphaGym\\AlphaGym\\AlphaGymBackend\\AlphaGymBackend\\AlphaGymBackend.csproj": {}
   },
   "projects": {
-    "C:\\Coding\\AlphaGym\\AlphaGym\\AlphaGymBackend\\alphagymbackend\\AlphaGymBackend.csproj": {
+    "C:\\Coding\\AlphaGym\\AlphaGym\\AlphaGymBackend\\AlphaGymBackend\\AlphaGymBackend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Coding\\AlphaGym\\AlphaGym\\AlphaGymBackend\\alphagymbackend\\AlphaGymBackend.csproj",
+        "projectUniqueName": "C:\\Coding\\AlphaGym\\AlphaGym\\AlphaGymBackend\\AlphaGymBackend\\AlphaGymBackend.csproj",
         "projectName": "AlphaGymBackend",
-        "projectPath": "C:\\Coding\\AlphaGym\\AlphaGym\\AlphaGymBackend\\alphagymbackend\\AlphaGymBackend.csproj",
+        "projectPath": "C:\\Coding\\AlphaGym\\AlphaGym\\AlphaGymBackend\\AlphaGymBackend\\AlphaGymBackend.csproj",
         "packagesPath": "C:\\Users\\jshat\\.nuget\\packages\\",
-        "outputPath": "C:\\Coding\\AlphaGym\\AlphaGym\\AlphaGymBackend\\alphagymbackend\\obj\\",
+        "outputPath": "C:\\Coding\\AlphaGym\\AlphaGym\\AlphaGymBackend\\AlphaGymBackend\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"

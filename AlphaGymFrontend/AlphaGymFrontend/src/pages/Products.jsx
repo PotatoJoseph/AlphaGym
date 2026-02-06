@@ -9,25 +9,7 @@ import {
   removeTransaction,
 } from "../utils/salesStore";
 
-/**
- * Products storage (frontend only)
- * Backend team will replace later.
- */
-const PRODUCTS_KEY = "alphagym_products_v1";
-
-function loadProducts() {
-  try {
-    const raw = localStorage.getItem(PRODUCTS_KEY);
-    if (!raw) return [];
-    const arr = JSON.parse(raw);
-    return Array.isArray(arr) ? arr : [];
-  } catch {
-    return [];
-  }
-}
-function saveProducts(list) {
-  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list));
-}
+import { apiFetch } from "../api/client";
 
 function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
@@ -43,22 +25,31 @@ function money(n) {
   return `₪${x}`;
 }
 
-export default function Products() {
-  // ===== Products
-  const [products, setProducts] = useState(() => {
-    const existing = loadProducts();
-    if (existing.length) return existing;
+const PRODUCTS_KEY = "alphagym_products_v1";
+function saveProducts(list) {
+  localStorage.setItem(PRODUCTS_KEY, JSON.stringify(list));
+}
 
-    const seeded = [
-      { id: 1, name: "ALPHA Protein Bar", price: 8, stock: 10, photo: "" },
-      { id: 2, name: "ALPHA Water", price: 5, stock: 20, photo: "" },
-      { id: 3, name: "ALPHA Day Pass", price: 20, stock: 9999, photo: "" },
-    ];
-    saveProducts(seeded);
-    return seeded;
-  });
+export default function Products() {
+  const [products, setProducts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const data = await apiFetch("/Products");
+        setProducts(data);
+      } catch (err) {
+        console.error("Failed to fetch products:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    }
+    fetchProducts();
+  }, []);
 
   const [editProduct, setEditProduct] = useState(null);
+
   const [epName, setEpName] = useState("");
   const [epPrice, setEpPrice] = useState("");
   const [epFile, setEpFile] = useState(null);
@@ -167,33 +158,38 @@ export default function Products() {
   const createProduct = async () => {
     const name = npName.trim();
     const price = Number(npPrice);
-    const stock = Number(npStock);
 
     if (!name || !Number.isFinite(price) || price <= 0) return;
-    if (!Number.isFinite(stock) || stock < 0) return;
 
-    let photo = "";
+    let photoUrl = "";
     if (npFile) {
       try {
-        photo = await fileToDataUrl(npFile);
+        photoUrl = await fileToDataUrl(npFile);
       } catch {
-        photo = "";
+        photoUrl = "";
       }
     }
 
-    const next = [{ id: Date.now(), name, price, stock, photo }, ...products];
-    setProducts(next);
-    saveProducts(next);
-
-    setNpName("");
-    setNpPrice("");
-    setNpStock("1");
-    setNpFile(null);
-    setShowNew(false);
+    try {
+      const newProd = await apiFetch("/Products", {
+        method: "POST",
+        body: { name, price, photoUrl },
+      });
+      setProducts([newProd, ...products]);
+      setNpName("");
+      setNpPrice("");
+      setNpStock("1");
+      setNpFile(null);
+      setShowNew(false);
+    } catch (err) {
+      console.error("Failed to create product:", err);
+    }
   };
 
   // ===== Product 3-dots popup actions
   const applyStockChange = () => {
+    // Stock is currently frontend-only or not in DB. 
+    // Keeping UI logic for now.
     if (!menuProduct) return;
     const delta = Number(stockDelta);
     if (!Number.isFinite(delta)) return;
@@ -205,26 +201,25 @@ export default function Products() {
     });
 
     setProducts(next);
-    saveProducts(next);
-
     setStockDelta("");
     setMenuProduct(null);
   };
 
-  const deleteProduct = () => {
+  const deleteProduct = async () => {
     if (!menuProduct) return;
 
-    // remove from products
-    const next = products.filter((p) => p.id !== menuProduct.id);
-    setProducts(next);
-    saveProducts(next);
-
-    // remove from cart too (if exists)
-    setCart((prev) => prev.filter((x) => x.id !== menuProduct.id));
+    try {
+      await apiFetch(`/Products/${menuProduct.id}`, { method: "DELETE" });
+      setProducts(products.filter((p) => p.id !== menuProduct.id));
+      setCart((prev) => prev.filter((x) => x.id !== menuProduct.id));
+    } catch (err) {
+      console.error("Failed to delete product:", err);
+    }
 
     setMenuProduct(null);
     setStockDelta("");
   };
+
 
   // ===== Transaction editing (FULL items)
   const startEditTx = (tx) => {

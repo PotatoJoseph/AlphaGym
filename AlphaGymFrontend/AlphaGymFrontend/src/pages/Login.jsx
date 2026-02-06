@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "../styles/login.css";
 import { setToken } from "../utils/auth";
 import logo from "../assets/alpha-logo.jpg";
+import api from "../api/client";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -15,7 +16,7 @@ export default function Login() {
     [username, password]
   );
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
 
@@ -24,9 +25,19 @@ export default function Login() {
       return;
     }
 
-    setToken("demo-token");
-    navigate("/app/dashboard", { replace: true });
+    try {
+      const response = await api.login(username, password);
+      if (response && response.token) {
+        setToken(response.token);
+        navigate("/app/dashboard", { replace: true });
+      } else {
+        setError("Login failed: No token received");
+      }
+    } catch (err) {
+      setError(err.message || "Invalid credentials");
+    }
   };
+
 
   return (
     <div className="ag-loginRoot">
