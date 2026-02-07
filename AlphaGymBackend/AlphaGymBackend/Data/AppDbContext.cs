@@ -15,6 +15,10 @@ namespace AlphaGymBackend.Data
         public DbSet<DoorCommand> DoorCommands { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<Member> Members { get; set; }
+        public DbSet<MembershipPlan> MembershipPlans { get; set; }
+        public DbSet<Sale> Sales { get; set; }
+        public DbSet<SaleItem> SaleItems { get; set; }
+        public DbSet<AccessLog> AccessLogs { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -30,8 +34,14 @@ namespace AlphaGymBackend.Data
                 .IsUnique();
                 
             modelBuilder.Entity<AccessCard>()
-                .HasIndex(c => c.CardNo)
+                .HasIndex(c => c.CardUid)
                 .IsUnique();
+
+            // Configure Sales relation
+            modelBuilder.Entity<Sale>()
+                .HasMany(s => s.SaleItems)
+                .WithOne(si => si.Sale)
+                .HasForeignKey(si => si.SaleId);
         }
     }
 }

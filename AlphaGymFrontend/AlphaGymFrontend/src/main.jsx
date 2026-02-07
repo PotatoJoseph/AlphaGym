@@ -10,6 +10,8 @@ import Dashboard from "./pages/Dashboard";
 import Sales from "./pages/Sales";
 import Products from "./pages/Products";
 import Doors from "./pages/Doors";
+import Members from "./pages/Members";
+import Memberships from "./pages/Memberships";
 import { isAuthed } from "./utils/auth";
 
 function RequireAuth({ children }) {
@@ -37,6 +39,8 @@ const App = () => {
           }
         >
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="members" element={<Members />} />
+          <Route path="memberships" element={<Memberships />} />
           <Route path="sales" element={<Sales />} />
           <Route path="products" element={<Products />} />
           <Route path="doors" element={<Doors />} />

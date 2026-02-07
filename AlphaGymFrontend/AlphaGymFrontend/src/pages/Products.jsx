@@ -54,14 +54,6 @@ export default function Products() {
   const [epPrice, setEpPrice] = useState("");
   const [epFile, setEpFile] = useState(null);
 
-
-  // ===== Cart
-  const [cart, setCart] = useState([]);
-  const [customerName, setCustomerName] = useState("");
-
-  // ===== Purchase History (transactions)
-  const [history, setHistory] = useState(() => loadTransactions());
-
   // ===== New Product Modal
   const [showNew, setShowNew] = useState(false);
   const [npName, setNpName] = useState("");
@@ -78,9 +70,50 @@ export default function Products() {
   const [editCustomer, setEditCustomer] = useState("");
   const [editItems, setEditItems] = useState([]); // [{name, qty, price}]
 
+
+  // ===== Cart
+  const [cart, setCart] = useState([]);
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [readingMember, setReadingMember] = useState(false);
+
+  // ===== Purchase History (transactions)
+  const [history, setHistory] = useState([]);
+
+  // Fetch history from backend
+  const fetchHistory = async () => {
+    try {
+      const data = await apiFetch("/Sales");
+      setHistory(data);
+    } catch (err) {
+      console.error("Failed to fetch history:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchHistory();
+  }, []);
+
+  const identifyMember = async () => {
+    setReadingMember(true);
+    try {
+      const res = await apiFetch("/Cards/read", { method: "POST" });
+      const members = await apiFetch("/Members");
+      const found = members.find(m => m.cardUid === res.cardUid);
+      if (found) {
+        setSelectedMember(found);
+      } else {
+        alert("Card not linked to any member.");
+      }
+    } catch (e) {
+      alert("Error identifying member: " + e.message);
+    } finally {
+      setReadingMember(false);
+    }
+  };
+
   // Keep history in sync (other pages updates)
   useEffect(() => {
-    const refresh = () => setHistory(loadTransactions());
+    const refresh = () => fetchHistory();
     refresh();
     window.addEventListener("alphagym_sales_updated", refresh);
     return () => window.removeEventListener("alphagym_sales_updated", refresh);
@@ -118,40 +151,41 @@ export default function Products() {
   };
 
   const removeFromCart = (id) => setCart((prev) => prev.filter((x) => x.id !== id));
-  const clearCart = () => setCart([]);
+  const clearCart = () => {
+    setCart([]);
+    setSelectedMember(null);
+  };
 
-  // ===== Checkout (reduce stock + save tx)
-  const checkout = () => {
+  // ===== Checkout (Backend persistence)
+  const checkout = async () => {
     if (!cart.length) return;
+    if (!selectedMember) {
+      alert("Please identify a member first by tapping their card.");
+      return;
+    }
 
-    const nextProducts = products.map((p) => {
-      const line = cart.find((x) => x.id === p.id);
-      if (!line) return p;
-      const stock = Number(p.stock ?? 0);
-      const newStock = Math.max(0, stock - Number(line.qty || 0));
-      return { ...p, stock: newStock };
-    });
+    try {
+      const sale = {
+        memberId: selectedMember.id,
+        items: cart.map((x) => ({
+          productId: x.id,
+          quantity: Number(x.qty || 0),
+          price: Number(x.price || 0),
+        })),
+        paymentMethod: "Cash", // Or add payment method selector
+      };
 
-    setProducts(nextProducts);
-    saveProducts(nextProducts);
+      await apiFetch("/Sales", {
+        method: "POST",
+        body: sale,
+      });
 
-    const tx = {
-      id: Date.now(),
-      customer: customerName.trim() || "Walk-in",
-      total: cartTotal,
-      timeISO: new Date().toISOString(),
-      items: cart.map((x) => ({
-        name: x.name,
-        qty: Number(x.qty || 0),
-        price: Number(x.price || 0),
-      })),
-    };
-
-    addTransaction(tx);
-    setHistory(loadTransactions());
-
-    setCustomerName("");
-    clearCart();
+      fetchHistory();
+      clearCart();
+      alert("Checkout successful!");
+    } catch (err) {
+      alert("Checkout failed: " + err.message);
+    }
   };
 
   // ===== New product create
@@ -474,13 +508,23 @@ export default function Products() {
 
             <div style={{ marginTop: 12 }}>
               <label className="ag-label">
-                Customer Name
-                <input
-                  className="ag-input"
-                  value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
-                  placeholder="e.g. Ahmad"
-                />
+                Member Identification
+                <div style={{ display: "flex", gap: 8, marginTop: 4 }}>
+                  <input
+                    className="ag-input"
+                    value={selectedMember ? selectedMember.fullName : ""}
+                    readOnly
+                    placeholder="Tap card to identify member..."
+                  />
+                  <button
+                    type="button"
+                    className="ag-btn ag-btnSecondary"
+                    onClick={identifyMember}
+                    disabled={readingMember}
+                  >
+                    {readingMember ? "Reading..." : "Read Card"}
+                  </button>
+                </div>
               </label>
             </div>
 
@@ -493,7 +537,7 @@ export default function Products() {
                 className="ag-btn ag-btnPrimary"
                 type="button"
                 onClick={checkout}
-                disabled={!cart.length}
+                disabled={!cart.length || !selectedMember}
                 style={{ flex: 1 }}
               >
                 Checkout
@@ -510,55 +554,37 @@ export default function Products() {
           <div className="ag-card">
             <div style={{ fontWeight: 900, letterSpacing: "0.06em" }}>Purchase History</div>
             <div className="ag-muted" style={{ fontSize: 12, marginTop: 4 }}>
-              Stored locally for now. Backend will replace later.
+              Real-time sales history from database.
             </div>
 
             <div style={{ marginTop: 12 }}>
               <table className="ag-table">
                 <thead>
                   <tr>
-                    <th>Customer</th>
+                    <th>Member</th>
                     <th>Total</th>
                     <th>Time</th>
                     <th>Items</th>
-                    <th style={{ width: 140 }}>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {history.map((tx) => {
-                    const dt = new Date(tx.timeISO);
-                    const itemsText = (tx.items || []).map((it) => `${it.name} x${it.qty} (₪${it.price})`).join(", ");
+                  {history.map((s) => {
+                    const dt = new Date(s.createdAt);
+                    const itemsText = (s.items || []).map((it) => `${it.productName || 'Product'} x${it.quantity} (₪${it.price})`).join(", ");
 
                     return (
-                      <tr key={tx.id}>
-                        <td>{tx.customer || "Walk-in"}</td>
-                        <td>{money(tx.total)}</td>
+                      <tr key={s.id}>
+                        <td>{s.member?.fullName || "Walk-in"}</td>
+                        <td>{money(s.totalAmount)}</td>
                         <td>{dt.toLocaleString()}</td>
                         <td style={{ maxWidth: 680 }}>{itemsText}</td>
-                        <td style={{ whiteSpace: "nowrap" }}>
-                          <button className="ag-btn" type="button" onClick={() => startEditTx(tx)} title="Edit items">
-                            ✏️
-                          </button>
-                          <button
-                            className="ag-btn"
-                            type="button"
-                            onClick={() => {
-                              removeTransaction(tx.id);
-                              setHistory(loadTransactions());
-                            }}
-                            title="Delete"
-                            style={{ marginLeft: 8 }}
-                          >
-                            🗑
-                          </button>
-                        </td>
                       </tr>
                     );
                   })}
 
                   {history.length === 0 ? (
                     <tr>
-                      <td colSpan={5} className="ag-muted" style={{ fontSize: 12, padding: 14 }}>
+                      <td colSpan={4} className="ag-muted" style={{ fontSize: 12, padding: 14 }}>
                         No purchases yet.
                       </td>
                     </tr>

@@ -12,8 +12,8 @@ namespace AlphaGymBackend.Data.Entities
         public Guid Id { get; set; }
 
         [Required]
-        [Column("card_no")]
-        public required string CardNo { get; set; } = string.Empty;
+        [Column("card_uid")]
+        public required string CardUid { get; set; } = string.Empty;
 
         // Can map other fields from alphadb.sql if known, for now minimal.
         

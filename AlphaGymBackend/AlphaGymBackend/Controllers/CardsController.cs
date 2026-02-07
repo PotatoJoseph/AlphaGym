@@ -37,7 +37,7 @@ namespace AlphaGymBackend.Controllers
             var card = new AccessCard
             {
                 Id = Guid.NewGuid(),
-                CardNo = request.CardNo,
+                CardUid = request.CardUid,
                 PermissionLevel = request.PermissionLevel,
                 IsActive = true
             };
@@ -94,11 +94,31 @@ namespace AlphaGymBackend.Controllers
 
             return Ok(new { Message = "Command sent" });
         }
+
+        [HttpPost("read")]
+        public async Task<IActionResult> ReadCard()
+        {
+            try
+            {
+                if (!_hikvisionService.Login()) return BadRequest("SDK not connected");
+                
+                var cardNo = await _hikvisionService.GetNextCardSwipe(20000); // 20s timeout
+                return Ok(new { CardUid = cardNo });
+            }
+            catch (TimeoutException)
+            {
+                return StatusCode(408, "Timed out waiting for card swipe");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex.Message);
+            }
+        }
     }
 
     public class CreateCardRequest
     {
-        public required string CardNo { get; set; }
+        public required string CardUid { get; set; }
         public int PermissionLevel { get; set; }
     }
 

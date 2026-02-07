@@ -3,6 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using AlphaGymBackend.Services;
+using AlphaGymBackend.Services.Hikvision;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +27,8 @@ builder.Services.AddCors(options =>
 // Services
 builder.Services.AddScoped<AlphaGymBackend.Services.Email.IEmailService, AlphaGymBackend.Services.Email.EmailService>();
 builder.Services.AddScoped<AlphaGymBackend.Services.Auth.AuthService>();
-builder.Services.AddScoped<AlphaGymBackend.Services.Hikvision.HikvisionService>();
+builder.Services.AddSingleton<AlphaGymBackend.Services.Hikvision.HikvisionService>();
+builder.Services.AddSingleton<AccessControlService>(); // Added AccessControlService
 
 // Database
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -48,6 +51,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 var app = builder.Build();
+
+// Ensure singleton services that listen to events are started
+app.Services.GetRequiredService<AccessControlService>();
+app.Services.GetRequiredService<HikvisionService>().Login();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

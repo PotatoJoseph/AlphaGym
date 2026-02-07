@@ -19,25 +19,22 @@ namespace AlphaGymBackend.Controllers
         [HttpPost("open")]
         public IActionResult Open()
         {
-            if (_hikvisionService.Login())
+            // GateWayIndex 1 is usually the first door
+            if (_hikvisionService.ControlDoor(1, CHCNetSDK.NET_DVR_OPEN_DOOR))
             {
-                // In a real implementation:
-                // _hikvisionService.ControlDoor("OPEN");
                 return Ok(new { Message = "Door opened" });
             }
-            return StatusCode(500, new { Message = "Failed to connect to door controller" });
+            return StatusCode(500, new { Message = "Failed to open door" });
         }
 
         [HttpPost("lock")]
         public IActionResult Lock()
         {
-            if (_hikvisionService.Login())
+            if (_hikvisionService.ControlDoor(1, CHCNetSDK.NET_DVR_CLOSE_DOOR))
             {
-                // In a real implementation:
-                // _hikvisionService.ControlDoor("CLOSE");
                 return Ok(new { Message = "Door locked" });
             }
-            return StatusCode(500, new { Message = "Failed to connect to door controller" });
+            return StatusCode(500, new { Message = "Failed to lock door" });
         }
     }
 }

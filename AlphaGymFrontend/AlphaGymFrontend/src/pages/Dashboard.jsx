@@ -16,28 +16,62 @@ export default function Dashboard() {
   const [doorMsg, setDoorMsg] = useState("");
   const [doorBusy, setDoorBusy] = useState(false);
   const [totals, setTotals] = useState({ today: 0, week: 0, month: 0 });
+  const [accessLogs, setAccessLogs] = useState([]);
 
-  // Recalculate sales totals (from checkout only)
-  const recalcTotals = () => {
-    const tx = loadTransactions();
-    setTotals(getTotals(tx));
+  // Fetch real sales stats and logs
+  const refreshData = async () => {
+    try {
+      const logs = await apiFetch("/AccessLogs");
+      setAccessLogs(logs);
+
+      const sales = await apiFetch("/Sales");
+      calculateTotals(sales);
+    } catch (e) {
+      console.error("Dashboard refresh failed", e);
+    }
+  };
+
+  const calculateTotals = (sales) => {
+    const now = new Date();
+    const startOfDay = new Date(now.setHours(0, 0, 0, 0));
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+
+    const todayTotal = sales
+      .filter(s => new Date(s.createdAt) >= startOfDay)
+      .reduce((sum, s) => sum + s.totalAmount, 0);
+
+    const weekTotal = sales
+      .filter(s => new Date(s.createdAt) >= startOfWeek)
+      .reduce((sum, s) => sum + s.totalAmount, 0);
+
+    const monthTotal = sales
+      .filter(s => new Date(s.createdAt) >= startOfMonth)
+      .reduce((sum, s) => sum + s.totalAmount, 0);
+
+    setTotals({ today: todayTotal, week: weekTotal, month: monthTotal });
   };
 
   useEffect(() => {
-    recalcTotals();
-    window.addEventListener("alphagym_sales_updated", recalcTotals);
-    return () => window.removeEventListener("alphagym_sales_updated", recalcTotals);
+    refreshData();
+    const interval = setInterval(refreshData, 10000); // Poll every 10s
+    return () => clearInterval(interval);
   }, []);
 
   const doorAction = async (action) => {
+    // ... same as before but maybe add 'member' logic if needed
+    if (action === "member") {
+      // Navigate to add member or show modal
+      window.location.hash = "#/Members/add";
+      return;
+    }
     setDoorBusy(true);
     setDoorMsg("");
     try {
       await apiFetch(`/Doors/${action}`, { method: "POST" });
-
       if (action === "open") setDoorMsg("Door opened");
       else if (action === "lock") setDoorMsg("Door locked");
-      else if (action === "member") setDoorMsg("Member added");
+      refreshData();
     } catch (e) {
       setDoorMsg(e?.message || "Door request failed");
     } finally {
@@ -45,18 +79,15 @@ export default function Dashboard() {
     }
   };
 
-  const accessRows = useMemo(() => demoAccess, []);
-
   return (
     <div>
       <h2 className="ag-sectionTitle">Overview</h2>
 
       <div className="ag-grid">
-        {/* Sales stats */}
         <div className="ag-col-4">
           <StatCard
             title="Today"
-            value={`₪${totals.today}`}
+            value={`₪${totals.today.toFixed(2)}`}
             hint="Sales collected today"
             accent="alpha"
           />
@@ -65,7 +96,7 @@ export default function Dashboard() {
         <div className="ag-col-4">
           <StatCard
             title="This Week"
-            value={`₪${totals.week}`}
+            value={`₪${totals.week.toFixed(2)}`}
             hint="Sales collected this week"
             accent="alpha"
           />
@@ -74,7 +105,7 @@ export default function Dashboard() {
         <div className="ag-col-4">
           <StatCard
             title="This Month"
-            value={`₪${totals.month}`}
+            value={`₪${totals.month.toFixed(2)}`}
             hint="Sales collected this month"
             accent="alpha"
           />
@@ -91,19 +122,23 @@ export default function Dashboard() {
               <thead>
                 <tr>
                   <th>Member</th>
-                  <th>Time</th>
                   <th>Action</th>
+                  <th>Status</th>
+                  <th>Time</th>
                 </tr>
               </thead>
 
               <tbody>
-                {accessRows.map((r) => (
-                  <tr key={r.id}>
-                    <td>{r.member}</td>
-                    <td>{r.at}</td>
+                {accessLogs.map((log) => (
+                  <tr key={log.id}>
+                    <td>{log.fullName}</td>
+                    <td>{log.action}</td>
                     <td>
-                      <span className="ag-pill">Entered</span>
+                      <span className={`ag-pill ${log.subscriptionStatus === "Active" ? "ag-pillSuccess" : "ag-pillDanger"}`}>
+                        {log.subscriptionStatus}
+                      </span>
                     </td>
+                    <td>{new Date(log.time).toLocaleTimeString()}</td>
                   </tr>
                 ))}
               </tbody>

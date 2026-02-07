@@ -32,6 +32,20 @@ export default function AppLayout() {
           </NavLink>
 
           <NavLink
+            to="/app/members"
+            className={({ isActive }) => (isActive ? "ag-link active" : "ag-link")}
+          >
+            👥 Members
+          </NavLink>
+
+          <NavLink
+            to="/app/memberships"
+            className={({ isActive }) => (isActive ? "ag-link active" : "ag-link")}
+          >
+            📋 Plans
+          </NavLink>
+
+          <NavLink
             to="/app/products"
             className={({ isActive }) => (isActive ? "ag-link active" : "ag-link")}
           >

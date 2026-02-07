@@ -35,7 +35,13 @@ export const api = {
   login: (email, password) => request("/Auth/login", { method: "POST", body: { email, password } }),
   openDoor: () => request("/Doors/open", { method: "POST" }),
   lockDoor: () => request("/Doors/lock", { method: "POST" }),
-
+  readCard: () => request("/Cards/read", { method: "POST" }),
+  getMembers: () => request("/Members"),
+  createMember: (data) => request("/Members", { method: "POST", body: data }),
+  getPlans: () => request("/MembershipPlans"),
+  getAccessLogs: () => request("/AccessLogs"),
+  getSales: () => request("/Sales"),
+  createSale: (data) => request("/Sales", { method: "POST", body: data }),
 };
 
 export default api;

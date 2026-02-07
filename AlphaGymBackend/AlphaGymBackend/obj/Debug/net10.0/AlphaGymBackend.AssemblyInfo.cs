@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("AlphaGymBackend")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a244d82b687f8c0c8a99ee2aac5f4a1544506f97")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d08fe90c24b7926b8c5479722d8588e2c0de96f3")]
 [assembly: System.Reflection.AssemblyProductAttribute("AlphaGymBackend")]
 [assembly: System.Reflection.AssemblyTitleAttribute("AlphaGymBackend")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
